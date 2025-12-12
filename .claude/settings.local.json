@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php -S:*)",
+      "Bash(php:*)",
+      "Bash(npm install)",
+      "Bash(curl:*)",
+      "Bash(npm run dev:*)",
+      "Bash(git init:*)",
+      "Bash(git config:*)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

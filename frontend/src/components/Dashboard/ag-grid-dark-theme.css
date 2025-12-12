@@ -1,0 +1,21 @@
+/* AG-Grid Dark Theme - Simplified Override */
+.ag-theme-alpine-dark {
+  --ag-background-color: #2d2d2d;
+  --ag-foreground-color: #e0e0e0;
+  --ag-border-color: #404040;
+  --ag-header-background-color: #3a3a3a;
+  --ag-odd-row-background-color: #323232;
+  --ag-row-hover-color: #3a3a3a;
+}
+
+/* Ensure text is readable */
+.ag-theme-alpine-dark .ag-cell,
+.ag-theme-alpine-dark .ag-header-cell,
+.ag-theme-alpine-dark .ag-header-cell-text {
+  color: #e0e0e0 !important;
+}
+
+/* Dark background for grid */
+.ag-theme-alpine-dark .ag-root-wrapper {
+  background-color: #2d2d2d;
+}

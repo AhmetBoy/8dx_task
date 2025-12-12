@@ -1,0 +1,27 @@
+{
+  "name": "8d-problem-platform-frontend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "8D Problem Solving Platform - Frontend with React and Siemens iX",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0",
+    "@siemens/ix": "^2.0.0",
+    "@siemens/ix-react": "^2.0.0",
+    "ag-grid-react": "^31.0.0",
+    "ag-grid-community": "^31.0.0",
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.0.8"
+  }
+}
