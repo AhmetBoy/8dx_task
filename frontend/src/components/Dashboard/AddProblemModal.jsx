@@ -1,8 +1,16 @@
 import { useState } from 'react';
-import { IxModal, IxModalHeader, IxModalContent, IxModalFooter, IxButton } from '@siemens/ix-react';
+import { IxButton, IxModalHeader, IxModalContent, IxModalFooter, IxInputGroup } from '@siemens/ix-react';
 import { problemsAPI } from '../../services/api';
-import { useTheme } from '../../contexts/ThemeContext';
 
+/**
+ * AddProblemModal Component
+ *
+ * Form modal for creating new 8D problems using Siemens iX Design System.
+ * Uses IxInputGroup for form fields with built-in validation styling.
+ *
+ * @param {Function} onClose - Callback to close the modal
+ * @param {Function} onSuccess - Callback on successful problem creation
+ */
 function AddProblemModal({ onClose, onSuccess }) {
   const [formData, setFormData] = useState({
     title: '',
@@ -13,8 +21,15 @@ function AddProblemModal({ onClose, onSuccess }) {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  // Theme context
-  const { colors } = useTheme();
+  // Reset form when modal opens
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      description: '',
+      responsible_team: '',
+    });
+    setErrors({});
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,6 +78,8 @@ function AddProblemModal({ onClose, onSuccess }) {
       const response = await problemsAPI.create(formData);
 
       if (response.data.success) {
+        // Reset form before calling onSuccess
+        resetForm();
         onSuccess();
       }
     } catch (error) {
@@ -74,108 +91,78 @@ function AddProblemModal({ onClose, onSuccess }) {
   };
 
   return (
-    <IxModal size="large">
+    <>
       <IxModalHeader>Yeni Problem Ekle (D1-D2)</IxModalHeader>
 
-      <IxModalContent>
-        <form onSubmit={handleSubmit} style={{ padding: '1rem' }}>
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: colors.text }}>
-              Problem Başlığı *
-            </label>
+      {/*
+        CRITICAL FIX: Form wraps ALL modal content including footer
+        - Ensures type="submit" button works correctly
+        - Proper form submission handling
+      */}
+      <form onSubmit={handleSubmit} id="add-problem-form">
+        <IxModalContent>
+          <IxInputGroup
+            label="Problem Başlığı *"
+            style={{ marginBottom: '1.5rem' }}
+          >
             <input
               type="text"
               name="title"
               value={formData.title}
               onChange={handleChange}
-              style={{
-                width: '100%',
-                padding: '0.5rem',
-                border: errors.title ? `1px solid ${colors.errorBorder}` : `1px solid ${colors.inputBorder}`,
-                backgroundColor: colors.inputBg,
-                color: colors.inputText,
-                borderRadius: '4px',
-                fontSize: '14px',
-                boxSizing: 'border-box'
-              }}
               placeholder="Örn: Makine Durması - Hat 2"
+              className={errors.title ? 'is-invalid' : ''}
             />
             {errors.title && (
-              <span style={{ color: colors.errorBorder, fontSize: '12px', marginTop: '0.25rem', display: 'block' }}>
-                {errors.title}
-              </span>
+              <span slot="error">{errors.title}</span>
             )}
-          </div>
+          </IxInputGroup>
 
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: colors.text }}>
-              Detaylı Açıklama (D2) *
-            </label>
+          <IxInputGroup
+            label="Detaylı Açıklama (D2) *"
+            style={{ marginBottom: '1.5rem' }}
+          >
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
               rows={5}
-              style={{
-                width: '100%',
-                padding: '0.5rem',
-                border: errors.description ? `1px solid ${colors.errorBorder}` : `1px solid ${colors.inputBorder}`,
-                backgroundColor: colors.inputBg,
-                color: colors.inputText,
-                borderRadius: '4px',
-                fontSize: '14px',
-                fontFamily: 'inherit',
-                resize: 'vertical',
-                boxSizing: 'border-box'
-              }}
               placeholder="Problemin detaylı açıklaması..."
+              className={errors.description ? 'is-invalid' : ''}
             />
             {errors.description && (
-              <span style={{ color: colors.errorBorder, fontSize: '12px', marginTop: '0.25rem', display: 'block' }}>
-                {errors.description}
-              </span>
+              <span slot="error">{errors.description}</span>
             )}
-          </div>
+          </IxInputGroup>
 
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: colors.text }}>
-              Sorumlu Ekip (D1) *
-            </label>
+          <IxInputGroup
+            label="Sorumlu Ekip (D1) *"
+            style={{ marginBottom: '1.5rem' }}
+          >
             <input
               type="text"
               name="responsible_team"
               value={formData.responsible_team}
               onChange={handleChange}
-              style={{
-                width: '100%',
-                padding: '0.5rem',
-                border: errors.responsible_team ? `1px solid ${colors.errorBorder}` : `1px solid ${colors.inputBorder}`,
-                backgroundColor: colors.inputBg,
-                color: colors.inputText,
-                borderRadius: '4px',
-                fontSize: '14px',
-                boxSizing: 'border-box'
-              }}
               placeholder="Örn: Bakım Ekibi"
+              className={errors.responsible_team ? 'is-invalid' : ''}
             />
             {errors.responsible_team && (
-              <span style={{ color: colors.errorBorder, fontSize: '12px', marginTop: '0.25rem', display: 'block' }}>
-                {errors.responsible_team}
-              </span>
+              <span slot="error">{errors.responsible_team}</span>
             )}
-          </div>
-        </form>
-      </IxModalContent>
+          </IxInputGroup>
+        </IxModalContent>
 
-      <IxModalFooter>
-        <IxButton outline onClick={onClose} disabled={loading}>
-          İptal
-        </IxButton>
-        <IxButton onClick={handleSubmit} disabled={loading}>
-          {loading ? 'Kaydediliyor...' : 'Kaydet'}
-        </IxButton>
-      </IxModalFooter>
-    </IxModal>
+        <IxModalFooter>
+          <IxButton outline type="button" onClick={onClose} disabled={loading}>
+            İptal
+          </IxButton>
+          <IxButton type="submit" disabled={loading}>
+            {loading ? 'Kaydediliyor...' : 'Kaydet'}
+          </IxButton>
+        </IxModalFooter>
+      </form>
+    </>
   );
 }
 

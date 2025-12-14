@@ -1,22 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IxButton, IxCard, IxCardContent } from '@siemens/ix-react';
+import { IxButton, IxCard, IxCardContent, IxModal } from '@siemens/ix-react';
 import { AgGridReact } from 'ag-grid-react';
 import { problemsAPI } from '../../services/api';
 import { useTheme } from '../../contexts/ThemeContext';
-import PageHeader from '../Layout/PageHeader';
 import AddProblemModal from './AddProblemModal';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './ag-grid-dark-theme.css';
 
+/**
+ * Dashboard Component
+ *
+ * Main dashboard displaying 8D problem list using AG-Grid.
+ * Uses Siemens iX Design System components:
+ * - IxCard for content container
+ * - IxButton for actions
+ * - IxModal for add problem form
+ *
+ * NO manual CSS spacing - relies on iX layout system
+ */
 function Dashboard() {
   const navigate = useNavigate();
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
+  const modalRef = useRef(null);
 
-  // Theme context
   const { isDarkMode, colors } = useTheme();
   const isMobile = window.innerWidth < 768;
 
@@ -112,80 +121,87 @@ function Dashboard() {
     navigate(`/problem/${event.data.id}`);
   };
 
-  const handleProblemCreated = () => {
-    setShowModal(false);
-    fetchProblems();
+  const handleAddProblem = () => {
+    if (modalRef.current) {
+      modalRef.current.showModal();
+    }
+  };
+  
+
+  const handleModalClose = () => {
+    if (modalRef.current) {
+      modalRef.current.dismissModal();
+    }
+  };
+
+  const handleProblemCreated = async () => {
+    // Close modal first
+    handleModalClose();
+    // Refresh problem list
+    await fetchProblems();
   };
 
   return (
-    <div style={{
-      width: '100%',
-      maxWidth: '100%',
-      margin: '0 auto'
-    }}>
-      <PageHeader
-        title="Problem Listesi & Tanımlama (D1-D2)"
-        subtitle="Tüm problemleri görüntüleyin ve yeni problem tanımlayın"
-      />
-
-      {/* Action Button */}
-      <div style={{
-        marginBottom: '1.5rem',
-        display: 'flex',
-        justifyContent: 'flex-end'
-      }}>
-        <IxButton onClick={() => setShowModal(true)}>
+  <>
+    <ix-layout-section>
+      {/* ÜST AKSİYON BAR */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          marginBottom: '1rem',
+        }}
+      >
+        <IxButton variant="primary" onClick={handleAddProblem}>
           Yeni Problem Ekle
         </IxButton>
       </div>
 
-      {/* Card - Full Width */}
-      <IxCard style={{
-        width: '100%',
-        backgroundColor: colors.cardBackground,
-        border: `1px solid ${colors.cardBorder}`,
-        boxShadow: colors.cardShadow
-      }}>
-        <IxCardContent>
-          {loading ? (
-            <div style={{ textAlign: 'center', padding: '2rem', color: colors.text }}>
-              Yükleniyor...
-            </div>
-          ) : (
-            <div
-              className={isDarkMode ? "ag-theme-alpine-dark" : "ag-theme-alpine"}
-              style={{
-                height: 'calc(100vh - 300px)',
-                minHeight: '400px',
-                width: '100%',
-                maxWidth: '100%'
-              }}
-            >
-              <AgGridReact
-                rowData={problems}
-                columnDefs={columnDefs}
-                defaultColDef={defaultColDef}
-                pagination={true}
-                paginationPageSize={10}
-                onRowClicked={handleRowClick}
-                rowStyle={{ cursor: 'pointer' }}
-                animateRows={true}
-                suppressHorizontalScroll={false}
-                domLayout='normal'
-              />
-            </div>
-          )}
-        </IxCardContent>
-      </IxCard>
-
-      {showModal && (
-        <AddProblemModal
-          onClose={() => setShowModal(false)}
-          onSuccess={handleProblemCreated}
-        />
+      {/* GRID */}
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '3rem' }}>
+          Yükleniyor...
+        </div>
+      ) : (
+        <div
+          className={isDarkMode ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'}
+          style={{ width: '100%' }}
+        >
+          <AgGridReact
+            rowData={problems}
+            columnDefs={columnDefs}
+            defaultColDef={defaultColDef}
+            pagination
+            paginationPageSize={10}
+            onRowClicked={handleRowClick}
+            animateRows
+            domLayout="autoHeight"
+          />
+        </div>
       )}
-    </div>
-  );
+    </ix-layout-section>
+
+    {/* MODAL */}
+    <IxModal
+  ref={modalRef}
+  size="720"
+  backdrop
+  backdropDismiss={false}
+  animation
+>
+  <AddProblemModal
+    onClose={handleModalClose}
+    onSuccess={handleProblemCreated}
+  />
+</IxModal>
+
+  </>
+);
+
+
+
+
+
 }
 
 export default Dashboard;
