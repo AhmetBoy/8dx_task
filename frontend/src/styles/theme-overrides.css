@@ -67,3 +67,8 @@ body.theme-light ix-application {
 body.theme-dark ix-application {
   background-color: #1e1e1e !important;
 }
+/* iX Modal backdrop – Dark theme için güçlendirme */
+body.theme-dark ix-modal::part(backdrop),
+body.theme-dark ix-overlay::part(backdrop) {
+  background-color: rgba(0, 0, 0, 0.55);
+}

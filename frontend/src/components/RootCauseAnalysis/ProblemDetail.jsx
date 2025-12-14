@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { IxButton, IxCard, IxCardContent, IxSpinner } from '@siemens/ix-react';
+import { IxButton, IxSpinner } from '@siemens/ix-react';
 import { problemsAPI, rootCausesAPI } from '../../services/api';
 import { useTheme } from '../../contexts/ThemeContext';
 import CauseTree from './CauseTree';
@@ -108,18 +108,61 @@ function ProblemDetail() {
       </div>
     </ix-content-header>
 
-    {/* Ana İçerik – Dashboard ile AYNI PATTERN */}
+    {/* Ana İçerik – Dashboard ile AYNI PATTERN (Tam genişlik) */}
     <ix-layout-section>
-      <h3 style={{ marginBottom: '1rem' }}>
-        5 Why / Kök Neden Analizi
-      </h3>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '1rem',
+        flexWrap: 'wrap',
+        gap: '0.5rem'
+      }}>
+        <h3 style={{ margin: 0 }}>
+          5 Why / Kök Neden Analizi (D4-D5)
+        </h3>
+        {causes.length === 0 && (
+          <IxButton variant="primary" onClick={handleAddRootCause}>
+            + İlk Nedeni Ekle
+          </IxButton>
+        )}
+      </div>
 
-      <CauseTree
-        causes={causes}
-        onUpdate={fetchData}
-        isDarkMode={isDarkMode}
-        colors={colors}
-      />
+      {causes.length === 0 ? (
+        <div style={{
+          textAlign: 'center',
+          padding: '3rem 1rem',
+          backgroundColor: isDarkMode ? '#2a2a2a' : '#f8f9fa',
+          borderRadius: '4px',
+          border: `1px dashed ${isDarkMode ? '#555' : '#dee2e6'}`,
+          width: '100%'
+        }}>
+          <p style={{
+            margin: '0 0 1rem 0',
+            fontSize: '16px',
+            color: isDarkMode ? '#aaa' : '#666'
+          }}>
+            Henüz kök neden analizi başlatılmadı.
+          </p>
+          <p style={{
+            margin: '0 0 1.5rem 0',
+            fontSize: '14px',
+            color: isDarkMode ? '#999' : '#777'
+          }}>
+            5 Why metoduyla problemin kök nedenini bulun.
+          </p>
+          <IxButton variant="primary" onClick={handleAddRootCause}>
+            + İlk Nedeni Ekle
+          </IxButton>
+        </div>
+      ) : (
+        <CauseTree
+          causes={causes}
+          onUpdate={fetchData}
+          isDarkMode={isDarkMode}
+          colors={colors}
+        />
+      )}
     </ix-layout-section>
   </>
 );

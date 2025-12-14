@@ -1,17 +1,20 @@
-import { useState } from 'react';
-import { IxButton, IxModalHeader, IxModalContent, IxModalFooter, IxInputGroup } from '@siemens/ix-react';
+import { useState, useRef } from 'react';
+import { IxButton, IxModalHeader, IxModalContent, IxModalFooter, IxInputGroup, Modal } from '@siemens/ix-react';
 import { problemsAPI } from '../../services/api';
 
 /**
  * AddProblemModal Component
  *
  * Form modal for creating new 8D problems using Siemens iX Design System.
- * Uses IxInputGroup for form fields with built-in validation styling.
+ * Uses the RECOMMENDED Siemens iX modal pattern with Modal component.
  *
- * @param {Function} onClose - Callback to close the modal
+ * Pattern based on: ModalTest.jsx (Siemens iX documentation recommended pattern)
+ *
  * @param {Function} onSuccess - Callback on successful problem creation
  */
-function AddProblemModal({ onClose, onSuccess }) {
+function AddProblemModal({ onSuccess }) {
+  const modalRef = useRef(null);
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -21,7 +24,16 @@ function AddProblemModal({ onClose, onSuccess }) {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  // Reset form when modal opens
+  // Modal control methods (Siemens iX recommended pattern)
+  const close = () => {
+    modalRef.current?.close();
+  };
+
+  const dismiss = () => {
+    modalRef.current?.dismiss();
+  };
+
+  // Reset form
   const resetForm = () => {
     setFormData({
       title: '',
@@ -78,8 +90,9 @@ function AddProblemModal({ onClose, onSuccess }) {
       const response = await problemsAPI.create(formData);
 
       if (response.data.success) {
-        // Reset form before calling onSuccess
+        // Reset form and close modal
         resetForm();
+        close();
         onSuccess();
       }
     } catch (error) {
@@ -91,12 +104,14 @@ function AddProblemModal({ onClose, onSuccess }) {
   };
 
   return (
-    <>
-      <IxModalHeader>Yeni Problem Ekle (D1-D2)</IxModalHeader>
+    <Modal ref={modalRef}>
+      <IxModalHeader onCloseClick={dismiss}>
+        Yeni Problem Ekle (D1-D2)
+      </IxModalHeader>
 
       {/*
-        CRITICAL FIX: Form wraps ALL modal content including footer
-        - Ensures type="submit" button works correctly
+        Form wraps modal content and footer
+        - Siemens iX recommended pattern
         - Proper form submission handling
       */}
       <form onSubmit={handleSubmit} id="add-problem-form">
@@ -154,7 +169,7 @@ function AddProblemModal({ onClose, onSuccess }) {
         </IxModalContent>
 
         <IxModalFooter>
-          <IxButton outline type="button" onClick={onClose} disabled={loading}>
+          <IxButton variant="subtle-primary" type="button" onClick={dismiss} disabled={loading}>
             İptal
           </IxButton>
           <IxButton type="submit" disabled={loading}>
@@ -162,7 +177,7 @@ function AddProblemModal({ onClose, onSuccess }) {
           </IxButton>
         </IxModalFooter>
       </form>
-    </>
+    </Modal>
   );
 }
 

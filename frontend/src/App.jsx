@@ -63,6 +63,8 @@ function AppContent() {
   <Routes>
     <Route path="/" element={<Dashboard />} />
     <Route path="/problem/:id" element={<ProblemDetail />} />
+    <Route path="/modal-test" element={<ModalTest />} />
+
   </Routes>
 </ix-content>
 
