@@ -52,6 +52,27 @@ function ProblemDetail() {
     }
   };
 
+  const handleDeleteProblem = async () => {
+    // Confirmation dialog
+    const confirmMessage = `Bu problemi silmek istediğinize emin misiniz?\n\nProblem: ${problem.title}\n\nBu işlem geri alınamaz ve tüm kök neden analizi de silinecektir.`;
+
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      const response = await problemsAPI.delete(id);
+
+      if (response.data.success) {
+        alert('Problem başarıyla silindi');
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Error deleting problem:', error);
+      alert('Problem silinirken hata oluştu: ' + (error.response?.data?.message || error.message));
+    }
+  };
+
   const handleAddRootCause = async () => {
     const causeText = prompt('Neden?');
     if (!causeText) return;
@@ -97,30 +118,60 @@ function ProblemDetail() {
 
   return (
   <>
-    {/* Sayfa Header */}
-    <ix-content-header slot="header">
-      <div slot="header-title">Problem Detayı</div>
-      <div slot="header-subtitle">{problem.title}</div>
-      <div slot="header-actions">
-        <IxButton outline onClick={() => navigate('/')}>
-          ← Geri Dön
-        </IxButton>
-      </div>
-    </ix-content-header>
-
-    {/* Ana İçerik – Dashboard ile AYNI PATTERN (Tam genişlik) */}
+    {/* SAYFA BAŞLIĞI (ix-content-header YOK) */}
     <ix-layout-section>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '1rem',
-        flexWrap: 'wrap',
-        gap: '0.5rem'
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+          marginBottom: '1rem',
+        }}
+      >
+        <div>
+          <h2 style={{ margin: 0 }}>Problem Detayı</h2>
+          <p style={{ margin: 0, opacity: 0.7 }}>
+            {problem.description}
+          </p><IxButton
+            outline
+            onClick={() => navigate(-1)}
+          >
+            ← Geri
+          </IxButton>
+        </div>
+
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <IxButton
+            outline
+            variant="danger"
+            onClick={handleDeleteProblem}
+          >
+            Problemi Sil
+          </IxButton>
+
+          
+        </div>
+      </div>
+    </ix-layout-section>
+
+    {/* ANA İÇERİK */}
+    <ix-layout-section>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1rem',
+          flexWrap: 'wrap',
+          gap: '0.5rem',
+        }}
+      >
         <h3 style={{ margin: 0 }}>
-          5 Why / Kök Neden Analizi (D4-D5)
+          5 Why / Kök Neden Analizi (D4–D5)
         </h3>
+
         {causes.length === 0 && (
           <IxButton variant="primary" onClick={handleAddRootCause}>
             + İlk Nedeni Ekle
@@ -129,27 +180,18 @@ function ProblemDetail() {
       </div>
 
       {causes.length === 0 ? (
-        <div style={{
-          textAlign: 'center',
-          padding: '3rem 1rem',
-          backgroundColor: isDarkMode ? '#2a2a2a' : '#f8f9fa',
-          borderRadius: '4px',
-          border: `1px dashed ${isDarkMode ? '#555' : '#dee2e6'}`,
-          width: '100%'
-        }}>
-          <p style={{
-            margin: '0 0 1rem 0',
-            fontSize: '16px',
-            color: isDarkMode ? '#aaa' : '#666'
-          }}>
+        <div
+          style={{
+            textAlign: 'center',
+            padding: '3rem 1rem',
+            backgroundColor: isDarkMode ? '#2a2a2a' : '#f8f9fa',
+            borderRadius: '4px',
+            border: `1px dashed ${isDarkMode ? '#555' : '#dee2e6'}`,
+            width: '100%',
+          }}
+        >
+          <p style={{ marginBottom: '1rem' }}>
             Henüz kök neden analizi başlatılmadı.
-          </p>
-          <p style={{
-            margin: '0 0 1.5rem 0',
-            fontSize: '14px',
-            color: isDarkMode ? '#999' : '#777'
-          }}>
-            5 Why metoduyla problemin kök nedenini bulun.
           </p>
           <IxButton variant="primary" onClick={handleAddRootCause}>
             + İlk Nedeni Ekle
@@ -166,6 +208,7 @@ function ProblemDetail() {
     </ix-layout-section>
   </>
 );
+
 
 
 

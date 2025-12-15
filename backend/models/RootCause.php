@@ -181,10 +181,10 @@ class RootCause {
             $errors[] = 'Cause text is required';
         }
 
-        // If marked as root cause, permanent action is required
-        if ($this->is_root_cause && empty(trim($this->permanent_action))) {
-            $errors[] = 'Permanent action is required for root causes';
-        }
+        // Note: permanent_action is optional when just marking as root cause
+        // User can toggle is_root_cause checkbox, then later add permanent_action
+        // Only validate permanent_action if it's explicitly being set to a non-empty value
+        // This allows the workflow: 1) Mark as root cause 2) Fill action 3) Save action
 
         return $errors;
     }
