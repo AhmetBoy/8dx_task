@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IxButton,IxContent,IxContentHeader,IxSpinner, IxCard, IxCardContent, showModal } from '@siemens/ix-react';
+import { IxButton, IxContent, IxContentHeader, IxSpinner, showModal } from '@siemens/ix-react';
 import { AgGridReact } from 'ag-grid-react';
 import { problemsAPI } from '../../services/api';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -130,7 +130,7 @@ function Dashboard() {
 
   return (
     <>
-      <IxContent>
+      <IxContent style={{ marginBottom: '1.5rem' }}>
        
           <IxContentHeader slot="header" has-actions="true"headerTitle="Problem Listesi & Tanımlama (D1–D2)" headerSubtitle="Tüm problemleri görüntüleyin ve yeni problem tanımlayın">
             <IxButton variant="primary" onClick={handleAddProblem}>
