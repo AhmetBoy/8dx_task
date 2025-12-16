@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { IxButton, IxSpinner, IxContentHeader, IxContent, IxCardContent, IxCard, IxTypography, IxIcon, Modal, IxModalHeader, IxModalContent, IxModalFooter, showModal } from '@siemens/ix-react';
+import { IxButton, IxSpinner, IxContentHeader, IxContent, IxCardContent, IxCard, IxTypography, IxIcon, Modal, IxModalHeader, IxModalContent, IxModalFooter, IxTextarea, showModal, showToast } from '@siemens/ix-react';
 import { problemsAPI, rootCausesAPI } from '../../services/api';
 import { useTheme } from '../../contexts/ThemeContext';
 import CauseTree from './CauseTree';
@@ -34,45 +34,16 @@ export function AddCauseModal({ title = "Yeni Neden Ekle", placeholder = "Neden 
         {title}
       </IxModalHeader>
       <IxModalContent>
-        <div style={{ padding: '1rem' }}>
-          <label style={{
-            display: 'block',
-            marginBottom: '0.5rem',
-            fontWeight: 'bold'
-          }}>
-            Neden Açıklaması *
-          </label>
-          <textarea
-            value={causeText}
-            onChange={(e) => {
-              setCauseText(e.target.value);
-              setError('');
-            }}
-            placeholder={placeholder}
-            rows={4}
-            style={{
-              width: '100%',
-              padding: '0.75rem',
-              border: error ? '1px solid #d32f2f' : '1px solid #dee2e6',
-              borderRadius: '4px',
-              fontSize: '14px',
-              fontFamily: 'inherit',
-              resize: 'vertical',
-              boxSizing: 'border-box'
-            }}
-            autoFocus
-          />
-          {error && (
-            <p style={{
-              color: '#d32f2f',
-              fontSize: '12px',
-              marginTop: '0.5rem',
-              marginBottom: 0
-            }}>
-              {error}
-            </p>
-          )}
-        </div>
+          
+          <IxTextarea
+            maxLength={100}
+            name="comment"
+            label="Comment"
+            textareaRows={5}
+            textareaCols={60}
+            helperText="Maksimum 100 karakter"
+          ></IxTextarea>
+          
       </IxModalContent>
       <IxModalFooter>
         <IxButton variant="subtle-primary" onClick={handleCancel}>
@@ -183,7 +154,10 @@ function ProblemDetail() {
       }
     } catch (error) {
       console.error('Error fetching data:', error);
-      alert('Veri yüklenirken hata oluştu');
+      showToast({
+        message: 'Veri yüklenirken hata oluştu',
+        type: 'error'
+      });
     } finally {
       setLoading(false);
     }
@@ -204,7 +178,10 @@ function ProblemDetail() {
             }
           } catch (error) {
             console.error('Error deleting problem:', error);
-            alert('Problem silinirken hata oluştu: ' + (error.response?.data?.message || error.message));
+            showToast({
+              message: 'Problem silinirken hata oluştu: ' + (error.response?.data?.message || error.message),
+              type: 'error'
+            });
           }
         }}
       />,
@@ -233,7 +210,10 @@ function ProblemDetail() {
             }
           } catch (error) {
             console.error('Error adding cause:', error);
-            alert('Sebep eklenirken hata oluştu');
+            showToast({
+              message: 'Sebep eklenirken hata oluştu',
+              type: 'error'
+            });
           }
         }}
       />,
@@ -246,10 +226,7 @@ function ProblemDetail() {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: '3rem' }}>
-        <IxSpinner size="large" />
-        <p>Yükleniyor...</p>
-      </div>
+        <IxSpinner size="large"/>
     );
   }
 

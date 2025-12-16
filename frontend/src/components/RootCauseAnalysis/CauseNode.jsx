@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { IxButton, IxCheckbox, showModal } from '@siemens/ix-react';
+import { IxButton, IxCheckbox, showModal, showToast } from '@siemens/ix-react';
 import { rootCausesAPI } from '../../services/api';
 import { AddCauseModal, DeleteCauseConfirmationModal } from './ProblemDetail';
 
@@ -34,7 +34,10 @@ function CauseNode({ cause, level, onUpdate, isLast, isDarkMode, colors }) {
             }
           } catch (error) {
             console.error('Error adding child cause:', error);
-            alert('Alt sebep eklenirken hata oluştu');
+            showToast({
+              message: 'Alt sebep eklenirken hata oluştu',
+              type: 'error'
+            });
           }
         }}
       />,
@@ -59,13 +62,19 @@ function CauseNode({ cause, level, onUpdate, isLast, isDarkMode, colors }) {
       }
     } catch (error) {
       console.error('Error toggling root cause:', error);
-      alert('Kök neden işaretlenirken hata oluştu');
+      showToast({
+        message: 'Kök neden işaretlenirken hata oluştu',
+        type: 'error'
+      });
     }
   };
 
   const handleSaveAction = async () => {
     if (!actionText.trim()) {
-      alert('Kalıcı çözüm açıklaması gereklidir');
+      showToast({
+        message: 'Kalıcı çözüm açıklaması gereklidir',
+        type: 'warning'
+      });
       return;
     }
 
@@ -78,12 +87,18 @@ function CauseNode({ cause, level, onUpdate, isLast, isDarkMode, colors }) {
       });
 
       if (response.data.success) {
-        alert('Kalıcı çözüm kaydedildi');
+        showToast({
+          message: 'Kalıcı çözüm başarıyla kaydedildi',
+          type: 'success'
+        });
         onUpdate();
       }
     } catch (error) {
       console.error('Error saving action:', error);
-      alert('Kalıcı çözüm kaydedilirken hata oluştu');
+      showToast({
+        message: 'Kalıcı çözüm kaydedilirken hata oluştu',
+        type: 'error'
+      });
     }
   };
 
@@ -100,7 +115,10 @@ function CauseNode({ cause, level, onUpdate, isLast, isDarkMode, colors }) {
             }
           } catch (error) {
             console.error('Error deleting cause:', error);
-            alert('Sebep silinirken hata oluştu');
+            showToast({
+              message: 'Sebep silinirken hata oluştu',
+              type: 'error'
+            });
           }
         }}
       />,

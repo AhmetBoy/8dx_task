@@ -6,7 +6,7 @@ import {
   Modal,
   showModal,
   IxCard,
-  IxCardContent,
+  IxCardContent,IxLayoutGrid, IxRow, IxCol, IxTypography, IxCheckbox
 } from '@siemens/ix-react';
 import { useRef } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -232,6 +232,20 @@ export default function ModalTest() {
           Siemens iX Modal component'inin farklı kullanım örnekleri
         </div>
       </ix-content-header>
+
+      <IxLayoutGrid>
+        <IxRow>
+          <IxCol>
+            <IxTypography format="display">Problemin Nedeni</IxTypography>
+            <IxCheckbox label="Kök Neden Olarak İşaretle"></IxCheckbox>
+            <IxTypography format="display">2</IxTypography>
+            <IxRow format="display">
+              <IxButton>1</IxButton>
+              <IxButton>1</IxButton>
+            </IxRow>
+          </IxCol>
+        </IxRow>
+      </IxLayoutGrid>
 
       {/* Content */}
       <ix-layout-section>
