@@ -130,7 +130,6 @@ function Dashboard() {
 
   return (
     <>
-    <ix-layout-section >
       <IxContent>
        
           <IxContentHeader slot="header" has-actions="true"headerTitle="Problem Listesi & Tanımlama (D1–D2)" headerSubtitle="Tüm problemleri görüntüleyin ve yeni problem tanımlayın">
@@ -141,8 +140,6 @@ function Dashboard() {
 
         {/* AG-Grid Table */}
         {loading ? (
-          
-            
             <IxSpinner variant='secondary' size='medium'></IxSpinner>
           
         ) : (
@@ -163,7 +160,6 @@ function Dashboard() {
           </div>
         )}
       </IxContent>
-      </ix-layout-section>
     </>
   );
 }

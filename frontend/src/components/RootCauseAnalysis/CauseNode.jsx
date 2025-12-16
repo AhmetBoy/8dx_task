@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { IxButton, IxCheckbox } from '@siemens/ix-react';
+import { IxButton, IxCheckbox, showModal } from '@siemens/ix-react';
 import { rootCausesAPI } from '../../services/api';
+import { AddCauseModal, DeleteCauseConfirmationModal } from './ProblemDetail';
 
 function CauseNode({ cause, level, onUpdate, isLast, isDarkMode, colors }) {
   const [showActionInput, setShowActionInput] = useState(cause.is_root_cause);
@@ -13,25 +14,32 @@ function CauseNode({ cause, level, onUpdate, isLast, isDarkMode, colors }) {
   const nodeColors = colors;
 
   const handleAddChild = async () => {
-    const causeText = prompt('Neden?');
-    if (!causeText) return;
+    // Siemens iX Modal Pattern - Add Child Cause Modal
+    await showModal({
+      content: <AddCauseModal
+        title="Alt Sebep Ekle (Neden?)"
+        placeholder="Alt sebep açıklamasını yazın..."
+        onConfirm={async (causeText) => {
+          try {
+            const response = await rootCausesAPI.create({
+              problem_id: cause.problem_id,
+              parent_id: cause.id,
+              cause_text: causeText,
+              is_root_cause: false,
+              order_index: cause.children ? cause.children.length : 0
+            });
 
-    try {
-      const response = await rootCausesAPI.create({
-        problem_id: cause.problem_id,
-        parent_id: cause.id,
-        cause_text: causeText,
-        is_root_cause: false,
-        order_index: cause.children ? cause.children.length : 0
-      });
-
-      if (response.data.success) {
-        onUpdate();
-      }
-    } catch (error) {
-      console.error('Error adding child cause:', error);
-      alert('Alt sebep eklenirken hata oluştu');
-    }
+            if (response.data.success) {
+              onUpdate();
+            }
+          } catch (error) {
+            console.error('Error adding child cause:', error);
+            alert('Alt sebep eklenirken hata oluştu');
+          }
+        }}
+      />,
+      backdrop: true,
+    });
   };
 
   const handleToggleRootCause = async () => {
@@ -80,19 +88,24 @@ function CauseNode({ cause, level, onUpdate, isLast, isDarkMode, colors }) {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Bu sebebi ve tüm alt sebeplerim silmek istediğinize emin misiniz?')) {
-      return;
-    }
-
-    try {
-      const response = await rootCausesAPI.delete(cause.id);
-      if (response.data.success) {
-        onUpdate();
-      }
-    } catch (error) {
-      console.error('Error deleting cause:', error);
-      alert('Sebep silinirken hata oluştu');
-    }
+    // Siemens iX Modal Pattern - Delete Confirmation Modal
+    await showModal({
+      content: <DeleteCauseConfirmationModal
+        causeText={cause.cause_text}
+        onConfirm={async () => {
+          try {
+            const response = await rootCausesAPI.delete(cause.id);
+            if (response.data.success) {
+              onUpdate();
+            }
+          } catch (error) {
+            console.error('Error deleting cause:', error);
+            alert('Sebep silinirken hata oluştu');
+          }
+        }}
+      />,
+      backdrop: true,
+    });
   };
 
   return (
