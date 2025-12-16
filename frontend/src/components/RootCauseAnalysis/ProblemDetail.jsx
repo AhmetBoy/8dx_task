@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { IxButton, IxSpinner } from '@siemens/ix-react';
+import { IxButton, IxSpinner,IxContentHeader,IxContent, IxCardContent, IxCard, IxTypography, IxIcon } from '@siemens/ix-react';
 import { problemsAPI, rootCausesAPI } from '../../services/api';
 import { useTheme } from '../../contexts/ThemeContext';
 import CauseTree from './CauseTree';
@@ -118,86 +118,38 @@ function ProblemDetail() {
 
   return (
   <>
-    {/* SAYFA BAŞLIĞI (ix-content-header YOK) */}
-    <ix-layout-section>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '0.75rem',
-          marginBottom: '1rem',
-        }}
-      >
-        <div>
-          <h2 style={{ margin: 0 }}>Problem Detayı</h2>
-          <p style={{ margin: 0, opacity: 0.7 }}>
-            {problem.description}
-          </p><IxButton
+  <ix-layout-section>
+  <IxContent>
+    <IxContentHeader
+      has-back-button
+      header-title="5 Why / Kök Neden Analizi (D4–D5)"
+      header-subtitle="Subtitle"
+      style={{ marginBottom: '1rem'}}
+      onBackButtonClick={() => navigate('/')}>
+      <IxButton
             outline
-            onClick={() => navigate(-1)}
-          >
-            ← Geri
-          </IxButton>
-        </div>
-
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <IxButton
-            outline
-            variant="danger"
+            variant="secondary"
             onClick={handleDeleteProblem}
-          >
+            style={{ marginRight: 8 }}>
             Problemi Sil
-          </IxButton>
-
-          
-        </div>
-      </div>
-    </ix-layout-section>
-
-    {/* ANA İÇERİK */}
-    <ix-layout-section>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '1rem',
-          flexWrap: 'wrap',
-          gap: '0.5rem',
-        }}
-      >
-        <h3 style={{ margin: 0 }}>
-          5 Why / Kök Neden Analizi (D4–D5)
-        </h3>
-
-        {causes.length === 0 && (
+      </IxButton>
+      {causes.length === 0 && (
           <IxButton variant="primary" onClick={handleAddRootCause}>
             + İlk Nedeni Ekle
           </IxButton>
         )}
-      </div>
-
+    </IxContentHeader>
+    
+    
+    
       {causes.length === 0 ? (
-        <div
-          style={{
-            textAlign: 'center',
-            padding: '3rem 1rem',
-            backgroundColor: isDarkMode ? '#2a2a2a' : '#f8f9fa',
-            borderRadius: '4px',
-            border: `1px dashed ${isDarkMode ? '#555' : '#dee2e6'}`,
-            width: '100%',
-          }}
-        >
-          <p style={{ marginBottom: '1rem' }}>
-            Henüz kök neden analizi başlatılmadı.
-          </p>
-          <IxButton variant="primary" onClick={handleAddRootCause}>
-            + İlk Nedeni Ekle
-          </IxButton>
-        </div>
-      ) : (
+    <IxCard variant="filled" padding={isMobile ? 'small' : 'large'} style={{ marginBottom: '1rem', width: '100%' }}>
+      <IxCardContent>
+        <IxTypography bold>Henüz kök neden analizi başlatılmadı.</IxTypography>
+        
+      </IxCardContent>
+    </IxCard>
+    ) : (
         <CauseTree
           causes={causes}
           onUpdate={fetchData}
@@ -205,6 +157,11 @@ function ProblemDetail() {
           colors={colors}
         />
       )}
+    
+    
+      
+      
+    </IxContent>
     </ix-layout-section>
   </>
 );

@@ -109,13 +109,10 @@ function AddProblemModal({ onSuccess }) {
         Yeni Problem Ekle (D1-D2)
       </IxModalHeader>
 
-      {/*
-        Form wraps modal content and footer
-        - Siemens iX recommended pattern
-        - Proper form submission handling
-      */}
+
       <form onSubmit={handleSubmit} id="add-problem-form">
         <IxModalContent>
+          
           <IxInputGroup
             label="Problem Başlığı *"
             style={{ marginBottom: '1.5rem' }}

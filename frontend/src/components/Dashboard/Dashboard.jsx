@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IxButton, showModal } from '@siemens/ix-react';
+import { IxButton,IxContent,IxContentHeader,IxSpinner, IxCard, IxCardContent, showModal } from '@siemens/ix-react';
 import { AgGridReact } from 'ag-grid-react';
 import { problemsAPI } from '../../services/api';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -13,9 +13,7 @@ import './ag-grid-dark-theme.css';
  * Dashboard Component
  *
  * Main dashboard displaying 8D problem list using AG-Grid.
- * Uses Siemens iX recommended pattern with showModal function.
- *
- * Pattern based on: ModalTest.jsx (Siemens iX documentation recommended pattern)
+ * Modal handling is managed in App.jsx using Siemens iX showModal pattern.
  */
 function Dashboard() {
   const navigate = useNavigate();
@@ -117,7 +115,7 @@ function Dashboard() {
     navigate(`/problem/${event.data.id}`);
   };
 
-  // Siemens iX recommended pattern: showModal function
+  // Siemens iX Modal Pattern - Add Problem
   const handleAddProblem = async () => {
     await showModal({
       content: <AddProblemModal onSuccess={handleProblemCreated} />,
@@ -132,23 +130,21 @@ function Dashboard() {
 
   return (
     <>
-      <ix-layout-section>
-        {/* Action Button */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          marginBottom: '1rem',
-        }}>
-          <IxButton variant="primary" onClick={handleAddProblem}>
-            Yeni Problem Ekle
+    <ix-layout-section >
+      <IxContent>
+       
+          <IxContentHeader slot="header" has-actions="true"headerTitle="Problem Listesi & Tanımlama (D1–D2)" headerSubtitle="Tüm problemleri görüntüleyin ve yeni problem tanımlayın">
+            <IxButton variant="primary" onClick={handleAddProblem}>
+            + Yeni Problem Ekle
           </IxButton>
-        </div>
+          </IxContentHeader>  
 
         {/* AG-Grid Table */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '3rem' }}>
-            Yükleniyor...
-          </div>
+          
+            
+            <IxSpinner variant='secondary' size='medium'></IxSpinner>
+          
         ) : (
           <div
             className={isDarkMode ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'}
@@ -166,6 +162,7 @@ function Dashboard() {
             />
           </div>
         )}
+      </IxContent>
       </ix-layout-section>
     </>
   );
