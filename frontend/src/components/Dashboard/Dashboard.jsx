@@ -7,7 +7,6 @@ import { useTheme } from '../../contexts/ThemeContext';
 import AddProblemModal from './AddProblemModal';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import './ag-grid-dark-theme.css';
 
 /**
  * Dashboard Component
