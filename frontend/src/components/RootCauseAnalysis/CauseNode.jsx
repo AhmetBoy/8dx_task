@@ -1,11 +1,22 @@
-import { useState } from 'react';
-import { IxButton, IxCheckbox, showModal, showToast } from '@siemens/ix-react';
+import { useState, useEffect } from 'react';
+import { IxButton, IxCheckbox, showModal, showToast, IxLayoutGrid, IxRow, IxCol, IxInputGroup, IxTypography, IxCard, IxCardContent, IxTextarea, IxChip } from '@siemens/ix-react';
 import { rootCausesAPI } from '../../services/api';
 import { AddCauseModal, DeleteCauseConfirmationModal } from './ProblemDetail';
 
 function CauseNode({ cause, level, onUpdate, isLast, isDarkMode, colors }) {
   const [showActionInput, setShowActionInput] = useState(cause.is_root_cause);
   const [actionText, setActionText] = useState(cause.permanent_action || '');
+
+  // Sync state when cause data changes
+  useEffect(() => {
+    setActionText(cause.permanent_action || '');
+    // If solution is saved, hide input; otherwise follow is_root_cause
+    if (cause.permanent_action) {
+      setShowActionInput(false);
+    } else {
+      setShowActionInput(cause.is_root_cause);
+    }
+  }, [cause.is_root_cause, cause.permanent_action]);
 
   const isMobile = window.innerWidth < 768;
   const indentSize = level * (isMobile ? 20 : 40);
@@ -45,28 +56,9 @@ function CauseNode({ cause, level, onUpdate, isLast, isDarkMode, colors }) {
     });
   };
 
-  const handleToggleRootCause = async () => {
-    const newIsRootCause = !cause.is_root_cause;
-
-    try {
-      const response = await rootCausesAPI.update(cause.id, {
-        cause_text: cause.cause_text,
-        is_root_cause: newIsRootCause,
-        permanent_action: newIsRootCause ? actionText : null,
-        order_index: cause.order_index
-      });
-
-      if (response.data.success) {
-        setShowActionInput(newIsRootCause);
-        onUpdate();
-      }
-    } catch (error) {
-      console.error('Error toggling root cause:', error);
-      showToast({
-        message: 'Kök neden işaretlenirken hata oluştu',
-        type: 'error'
-      });
-    }
+  const handleToggleRootCause = () => {
+    // Simply toggle the input visibility
+    setShowActionInput(!showActionInput);
   };
 
   const handleSaveAction = async () => {
@@ -91,6 +83,7 @@ function CauseNode({ cause, level, onUpdate, isLast, isDarkMode, colors }) {
           message: 'Kalıcı çözüm başarıyla kaydedildi',
           type: 'success'
         });
+        setShowActionInput(false); // Close input after save
         onUpdate();
       }
     } catch (error) {
@@ -128,123 +121,71 @@ function CauseNode({ cause, level, onUpdate, isLast, isDarkMode, colors }) {
 
   return (
     <div style={{ marginBottom: '1rem' }}>
-      <div
-        style={{
-          marginLeft: `${indentSize}px`,
-          padding: isMobile ? '0.75rem' : '1rem',
-          backgroundColor: nodeColors.cardBackground,
-          borderRadius: '4px',
-          border: cause.is_root_cause ? `2px solid ${nodeColors.rootCauseBorder}` : `1px solid ${nodeColors.border}`,
-          boxShadow: cause.is_root_cause ? `0 2px 8px rgba(255,107,107,${isDarkMode ? '0.4' : '0.2'})` : 'none',
-          width: `calc(100% - ${indentSize}px)`,
-          boxSizing: 'border-box'
-        }}
-      >
-        <div style={{
-          display: 'flex',
-          alignItems: 'start',
-          gap: isMobile ? '0.5rem' : '1rem',
-          flexDirection: isMobile ? 'column' : 'row'
-        }}>
-          {/* Level indicator */}
-          <div style={{
-            minWidth: isMobile ? '25px' : '30px',
-            height: isMobile ? '25px' : '30px',
-            borderRadius: '50%',
-            backgroundColor: cause.is_root_cause ? '#ff6b6b' : '#4dabf7',
-            color: 'white',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 'bold',
-            fontSize: isMobile ? '11px' : '12px'
-          }}>
-            {level + 1}
-          </div>
-
-          <div style={{ flex: 1, width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
-            {/* Cause text */}
-            <div style={{ marginBottom: '0.75rem', width: '100%' }}>
-              <p style={{
-                margin: 0,
-                fontSize: isMobile ? '14px' : '16px',
-                fontWeight: cause.is_root_cause ? 'bold' : 'normal',
-                color: cause.is_root_cause ? nodeColors.rootCause : nodeColors.text,
-                wordBreak: 'break-word'
-              }}>
+      <div style={{ marginLeft: `${indentSize}px`, width: `calc(100% - ${indentSize}px)` }}>
+        <IxCard
+          variant="filled"
+          style={{width: '100%',
+            border: cause.is_root_cause ? `2px solid ${nodeColors.rootCauseBorder}` : undefined
+          }}
+        >
+          <IxCardContent>
+            <IxLayoutGrid gap="12">
+          {/* Row 1: Level Indicator + Cause Text */}
+          <IxRow>
+            <IxCol size="auto">
+              {/* Level indicator */}
+              <IxChip variant={cause.is_root_cause ? 'success' : 'primary'}>
+                {level + 1}
+              </IxChip>
+            </IxCol>
+            <IxCol>
+              {/* Cause text */}
+              <IxTypography
+                format={isMobile ? "body" : "h5"}
+                bold={cause.is_root_cause}
+                style={{
+                  color: cause.is_root_cause ? nodeColors.rootCause : nodeColors.text,
+                  wordBreak: 'break-word'
+                }}
+              >
                 {cause.cause_text}
                 {cause.is_root_cause && (
-                  <span style={{
-                    marginLeft: '0.5rem',
-                    padding: '2px 8px',
-                    backgroundColor: '#ff6b6b',
-                    color: 'white',
-                    fontSize: isMobile ? '10px' : '11px',
-                    borderRadius: '3px',
-                    fontWeight: 'bold',
-                    display: isMobile ? 'inline-block' : 'inline',
-                    marginTop: isMobile ? '0.25rem' : '0'
-                  }}>
-                    KÖK NEDEN
-                  </span>
+                  <>
+                    {' '}
+                    <IxChip variant="success" >
+                      KÖK NEDEN
+                    </IxChip>
+                  </>
                 )}
-              </p>
-            </div>
+              </IxTypography>
+            </IxCol>
+          </IxRow>
 
-            {/* Root cause checkbox */}
-            <div style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  checked={cause.is_root_cause}
-                  onChange={handleToggleRootCause}
-                />
-                <span style={{ fontSize: isMobile ? '12px' : '14px', color: nodeColors.text }}>
-                  Kök Neden Olarak İşaretle
-                </span>
-              </label>
-            </div>
+          {/* Row 2: Root cause checkbox */}
+          <IxRow>
+            <IxCol>
+              <IxCheckbox
+                checked={showActionInput}
+                onCheckedChange={handleToggleRootCause}
+              >
+                Kök Neden Olarak İşaretle
+              </IxCheckbox>
+            </IxCol>
+          </IxRow>
 
-            {/* Action input (D5) */}
-            {showActionInput && (
-              <div style={{
-                marginTop: '1rem',
-                padding: isMobile ? '0.75rem' : '1rem',
-                backgroundColor: nodeColors.rootCauseBg,
-                borderRadius: '4px',
-                border: `1px dashed ${nodeColors.rootCauseBorder}`,
-                width: '100%',
-                boxSizing: 'border-box'
-              }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontWeight: 'bold',
-                  color: nodeColors.rootCause,
-                  fontSize: isMobile ? '13px' : '14px',
-                  width: '100%'
-                }}>
-                  Kalıcı Çözüm (D5) *
-                </label>
-                <textarea
-                  value={actionText}
-                  onChange={(e) => setActionText(e.target.value)}
-                  placeholder="Kalıcı çözüm önerinizi yazın..."
-                  rows={3}
-                  style={{
-                    width: '100%',
-                    maxWidth: '100%',
-                    padding: '0.5rem',
-                    border: `1px solid ${nodeColors.rootCauseBorder}`,
-                    backgroundColor: nodeColors.inputBg,
-                    color: nodeColors.text,
-                    borderRadius: '4px',
-                    fontSize: isMobile ? '13px' : '14px',
-                    fontFamily: 'inherit',
-                    resize: 'vertical',
-                    boxSizing: 'border-box'
-                  }}
-                />
+          {/* Row 3: Action input (D5) - Conditional */}
+          {showActionInput && (
+            <IxRow>
+              <IxCol>
+                <IxInputGroup>
+                  <span slot="input-start">💡</span>
+                  <input
+                    type="text"
+                    value={actionText}
+                    onInput={(e) => setActionText(e.target.value)}
+                    placeholder="Kalıcı çözüm önerinizi yazın..."
+                  />
+                </IxInputGroup>
                 <IxButton
                   onClick={handleSaveAction}
                   style={{ marginTop: '0.5rem' }}
@@ -252,48 +193,45 @@ function CauseNode({ cause, level, onUpdate, isLast, isDarkMode, colors }) {
                 >
                   Çözümü Kaydet
                 </IxButton>
-              </div>
-            )}
+              </IxCol>
+            </IxRow>
+          )}
 
-            {/* Display saved action */}
-            {cause.permanent_action && !showActionInput && (
-              <div style={{
-                marginTop: '1rem',
-                padding: isMobile ? '0.75rem' : '1rem',
-                backgroundColor: nodeColors.solutionBg,
-                borderRadius: '4px',
-                border: `1px solid ${nodeColors.solutionBorder}`,
-                width: '100%',
-                boxSizing: 'border-box'
-              }}>
-                <p style={{
-                  margin: 0,
-                  fontSize: isMobile ? '12px' : '13px',
-                  color: nodeColors.solutionText,
-                  wordBreak: 'break-word',
-                  width: '100%'
-                }}>
-                  <strong>Kalıcı Çözüm:</strong> {cause.permanent_action}
-                </p>
-              </div>
-            )}
+          {/* Row 4: Display saved action - Conditional */}
+          {cause.permanent_action && !showActionInput && (
+            <IxRow>
+              <IxCol>
+                <IxTypography
+                  format="h4"
+                  bold
+                  style={{
+                    color: nodeColors.solutionText,
+                    wordBreak: 'break-word',
+                    width: '100%'
+                  }}
+                >
+                  Kalıcı Çözüm: {cause.permanent_action}
+                </IxTypography>
+              </IxCol>
+            </IxRow>
+          )}
 
-            {/* Action buttons */}
-            <div style={{
-              marginTop: '1rem',
-              display: 'flex',
-              gap: '0.5rem',
-              flexWrap: 'wrap'
-            }}>
+          {/* Row 5: Action buttons - Side by side */}
+          <IxRow>
+            <IxCol size="auto">
               <IxButton onClick={handleAddChild} size="small" outline>
                 {isMobile ? '+ Alt Sebep' : '+ Alt Sebep Ekle (Neden?)'}
               </IxButton>
+            </IxCol>
+            <IxCol size="auto">
               <IxButton onClick={handleDelete} size="small" outline variant="danger">
                 Sil
               </IxButton>
-            </div>
-          </div>
-        </div>
+            </IxCol>
+          </IxRow>
+            </IxLayoutGrid>
+          </IxCardContent>
+        </IxCard>
       </div>
 
       {/* Render children recursively */}

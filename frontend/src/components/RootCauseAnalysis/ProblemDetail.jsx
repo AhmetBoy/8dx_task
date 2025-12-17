@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { IxButton, IxSpinner, IxContentHeader, IxContent, IxCardContent, IxCard, IxTypography, IxIcon, Modal, IxModalHeader, IxModalContent, IxModalFooter, IxTextarea, showModal, showToast } from '@siemens/ix-react';
+import { IxButton, IxSpinner, IxContentHeader, IxContent, IxCardContent, IxCard, IxTypography, IxIcon, Modal, IxModalHeader, IxModalContent, IxModalFooter, IxMessageBar, IxTextarea, showModal, showToast } from '@siemens/ix-react';
 import { problemsAPI, rootCausesAPI } from '../../services/api';
 import { useTheme } from '../../contexts/ThemeContext';
 import CauseTree from './CauseTree';
@@ -34,16 +34,18 @@ export function AddCauseModal({ title = "Yeni Neden Ekle", placeholder = "Neden 
         {title}
       </IxModalHeader>
       <IxModalContent>
-          
-          <IxTextarea
-            maxLength={100}
-            name="comment"
-            label="Comment"
-            textareaRows={5}
-            textareaCols={60}
-            helperText="Maksimum 100 karakter"
-          ></IxTextarea>
-          
+        <IxTextarea
+          value={causeText}
+          onInput={(e) => {
+            setCauseText(e.target.value);
+            setError('');
+          }}
+          name="cause"
+          label="Neden Açıklaması *"
+          placeholder={placeholder}
+          textareaRows={4}
+          helperText={error || "Neden açıklamasını yazın"}
+        ></IxTextarea>
       </IxModalContent>
       <IxModalFooter>
         <IxButton variant="subtle-primary" onClick={handleCancel}>
@@ -265,12 +267,7 @@ function ProblemDetail() {
     
     
       {causes.length === 0 ? (
-    <IxCard style={{ marginBottom: '1rem', width: '100%' }}>
-      <IxCardContent>
-        <IxTypography bold>Henüz kök neden analizi başlatılmadı. İlk nedeni ekleyerek başlayın.</IxTypography>
-        
-      </IxCardContent>
-    </IxCard>
+      <IxMessageBar persistent>Henüz kök neden analizi başlatılmadı. İlk nedeni ekleyerek başlayın.</IxMessageBar>
     ) : (
         <CauseTree
           causes={causes}

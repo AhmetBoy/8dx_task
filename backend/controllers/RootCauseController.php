@@ -213,6 +213,12 @@ class RootCauseController {
 
             // Update
             if ($this->rootCause->update()) {
+                // If root cause with solution, close the problem
+                if ($this->rootCause->is_root_cause && !empty($this->rootCause->permanent_action)) {
+                    $stmt = $this->db->prepare("UPDATE problems SET status = 'closed' WHERE id = ?");
+                    $stmt->execute([$this->rootCause->problem_id]);
+                }
+
                 $updatedCause = $this->rootCause->getById($id);
                 $updatedCause['is_root_cause'] = (bool)$updatedCause['is_root_cause'];
 
