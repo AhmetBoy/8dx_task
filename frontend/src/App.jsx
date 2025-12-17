@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { IxApplication, IxApplicationHeader, IxMenu, IxMenuItem, IxButton, IxContentHeader,IxContent, showModal } from '@siemens/ix-react';
 import { useTheme } from './contexts/ThemeContext';
 import Dashboard from './components/Dashboard/Dashboard';
 import ProblemDetail from './components/RootCauseAnalysis/ProblemDetail';
-import ModalTest from './components/ModalTest/ModalTest';
 import AddProblemModal from './components/Dashboard/AddProblemModal';
 
 function AppContent() {
@@ -15,8 +14,6 @@ function AppContent() {
 
   const menuItems = [
     { id: 'dashboard', path: '/', icon: 'home', label: 'Dashboard' },
-    { id: 'modal-test', path: '/modal-test', icon: 'rocket', label: 'Modal Test' },
-    { id: 'about', path: '/about', icon: 'info', label: 'About 8D' },
   ];
 
   // Siemens iX Modal Pattern - Handle Add Problem
@@ -57,7 +54,6 @@ function AppContent() {
   <Routes>
     <Route path="/" element={<Dashboard key={refreshKey} />} />
     <Route path="/problem/:id" element={<ProblemDetail />} />
-    <Route path="/modal-test" element={<ModalTest />} />
   </Routes>
 </IxContent>
 

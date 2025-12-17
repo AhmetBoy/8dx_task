@@ -73,21 +73,6 @@ class RootCause {
     }
 
     /**
-     * Get all causes (flat list) for a problem
-     */
-    public function getAllByProblemId($problem_id) {
-        $query = "SELECT * FROM " . $this->table . "
-                  WHERE problem_id = :problem_id
-                  ORDER BY order_index ASC, created_at ASC";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':problem_id', $problem_id, PDO::PARAM_INT);
-        $stmt->execute();
-
-        return $stmt->fetchAll();
-    }
-
-    /**
      * Get single cause by ID
      */
     public function getById($id) {
@@ -189,18 +174,4 @@ class RootCause {
         return $errors;
     }
 
-    /**
-     * Get all root causes (is_root_cause = true) for a problem
-     */
-    public function getRootCausesByProblemId($problem_id) {
-        $query = "SELECT * FROM " . $this->table . "
-                  WHERE problem_id = :problem_id AND is_root_cause = 1
-                  ORDER BY created_at ASC";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':problem_id', $problem_id, PDO::PARAM_INT);
-        $stmt->execute();
-
-        return $stmt->fetchAll();
-    }
 }

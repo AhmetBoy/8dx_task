@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { IxButton, IxSpinner, IxContentHeader, IxContent, IxCardContent, IxCard, IxTypography, IxIcon, Modal, IxModalHeader, IxModalContent, IxModalFooter, IxMessageBar, IxTextarea, showModal, showToast } from '@siemens/ix-react';
+import { IxButton, IxSpinner, IxContentHeader, IxContent, IxTypography, Modal, IxModalHeader, IxModalContent, IxModalFooter, IxMessageBar, IxTextarea, showModal, showToast } from '@siemens/ix-react';
 import { problemsAPI, rootCausesAPI } from '../../services/api';
 import { useTheme } from '../../contexts/ThemeContext';
 import CauseTree from './CauseTree';
@@ -223,7 +223,7 @@ function ProblemDetail() {
     });
   };
 
-  const { isDarkMode, colors } = useTheme();
+  const { isDarkMode } = useTheme();
   const isMobile = window.innerWidth < 768;
 
   if (loading) {
@@ -273,7 +273,6 @@ function ProblemDetail() {
           causes={causes}
           onUpdate={fetchData}
           isDarkMode={isDarkMode}
-          colors={colors}
         />
       )}
     

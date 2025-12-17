@@ -1,12 +1,12 @@
 import CauseNode from './CauseNode';
 
-function CauseTree({ causes, onUpdate, isDarkMode, colors }) {
+function CauseTree({ causes, onUpdate, isDarkMode }) {
   const isMobile = window.innerWidth < 768;
 
   return (
     <div style={{
       padding: isMobile ? '0.75rem' : '1rem',
-      backgroundColor: colors?.sectionBackground || (isDarkMode ? '#3a3a3a' : '#f8f9fa'),
+      backgroundColor: isDarkMode ? '#3a3a3a' : '#f8f9fa',
       borderRadius: '4px',
       overflowX: 'auto',
       width: '100%',
@@ -20,7 +20,6 @@ function CauseTree({ causes, onUpdate, isDarkMode, colors }) {
           onUpdate={onUpdate}
           isLast={index === causes.length - 1}
           isDarkMode={isDarkMode}
-          colors={colors}
         />
       ))}
     </div>

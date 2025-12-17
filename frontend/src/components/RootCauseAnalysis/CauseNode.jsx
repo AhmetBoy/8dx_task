@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { IxButton, IxCheckbox, showModal, showToast, IxLayoutGrid, IxRow, IxCol, IxInputGroup, IxTypography, IxCard, IxCardContent, IxTextarea, IxChip } from '@siemens/ix-react';
+import { IxButton, IxCheckbox, showModal, showToast, IxLayoutGrid, IxRow, IxCol, IxInputGroup, IxTypography, IxCard, IxCardContent, IxChip } from '@siemens/ix-react';
 import { rootCausesAPI } from '../../services/api';
 import { AddCauseModal, DeleteCauseConfirmationModal } from './ProblemDetail';
 
-function CauseNode({ cause, level, onUpdate, isLast, isDarkMode, colors }) {
+function CauseNode({ cause, level, onUpdate, isLast, isDarkMode }) {
   const [showActionInput, setShowActionInput] = useState(cause.is_root_cause);
   const [actionText, setActionText] = useState(cause.permanent_action || '');
 
@@ -21,8 +21,13 @@ function CauseNode({ cause, level, onUpdate, isLast, isDarkMode, colors }) {
   const isMobile = window.innerWidth < 768;
   const indentSize = level * (isMobile ? 20 : 40);
 
-  // Use provided colors (should always be from ThemeContext now)
-  const nodeColors = colors;
+  // Define colors based on isDarkMode
+  const nodeColors = {
+    rootCauseBorder: '#ff6b6b',
+    rootCause: '#ff6b6b',
+    text: isDarkMode ? '#e0e0e0' : '#333',
+    solutionText: isDarkMode ? '#a8e6a1' : '#2d6a2d'
+  };
 
   const handleAddChild = async () => {
     // Siemens iX Modal Pattern - Add Child Cause Modal
@@ -245,7 +250,6 @@ function CauseNode({ cause, level, onUpdate, isLast, isDarkMode, colors }) {
               onUpdate={onUpdate}
               isLast={index === cause.children.length - 1}
               isDarkMode={isDarkMode}
-              colors={colors}
             />
           ))}
         </div>
