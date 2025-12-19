@@ -1,10 +1,8 @@
 # Enable URL Rewriting
 RewriteEngine On
 
-# Set base directory
-RewriteBase /8dx/backend/
-
 # Redirect all API requests to api/index.php
+# Works for both local (subdirectory) and production (root)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^api/(.*)$ api/index.php [QSA,L]

@@ -44,6 +44,7 @@ export function AddCauseModal({ title = "Yeni Neden Ekle", placeholder = "Neden 
           label="Neden Açıklaması *"
           placeholder={placeholder}
           textareaRows={4}
+          textareaCols={50}
           helperText={error || "Neden açıklamasını yazın"}
         ></IxTextarea>
       </IxModalContent>

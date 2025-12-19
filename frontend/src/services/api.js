@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost/8dx/backend/api';
+// Environment-aware API base URL
+// In production (InfinityFree), uses relative path
+// In development (localhost), uses absolute URL
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost/8dx/backend/api'  // Local development
+  : '/backend/api';                      // Production (relative path)
 
 const api = axios.create({
   baseURL: API_BASE_URL,

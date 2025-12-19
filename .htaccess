@@ -1,0 +1,39 @@
+# 8D Problem Solving Platform
+# Root .htaccess for unified deployment (Frontend + Backend)
+
+# Enable URL Rewriting
+RewriteEngine On
+
+# Security: Prevent directory browsing
+Options -Indexes
+
+# Security: Protect sensitive files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Backend API Routes
+# All requests to /backend/api/* are handled by backend .htaccess
+# No rewrite needed here - let backend handle its own routing
+
+# Frontend SPA Routing (React Router)
+# If the request is NOT for:
+# - An existing file
+# - An existing directory
+# - Backend API (/backend/*)
+# - Static assets (optional, but good practice)
+# Then serve index.html for React Router to handle
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/backend/
+RewriteRule ^(.*)$ index.html [L,QSA]
+
+# PHP Settings for InfinityFree
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+</IfModule>

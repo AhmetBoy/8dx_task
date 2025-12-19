@@ -33,9 +33,11 @@ $db = $database->getConnection();
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// Remove base path if running from subdirectory
-// Adjust this based on your server configuration
-$basePath = '/8dx/backend/api';
+// Remove base path - Environment-aware
+// Local: /8dx/backend/api
+// Production: /backend/api
+$isLocal = in_array($_SERVER['HTTP_HOST'], ['localhost', '127.0.0.1', 'localhost:8000']);
+$basePath = $isLocal ? '/8dx/backend/api' : '/backend/api';
 $uri = str_replace($basePath, '', $uri);
 $uri = trim($uri, '/');
 

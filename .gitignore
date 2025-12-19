@@ -5,6 +5,7 @@ frontend/package-lock.json
 # Build files
 frontend/dist/
 frontend/build/
+dist-production/
 
 # Environment files
 .env
