@@ -1,5 +1,7 @@
 # 8D Problem Solving Platform - MVP
 
+Task Raporu: https://github.com/AhmetBoy/8dx_task/blob/main/8D%20Task%20Project%20Report.pdf
+
 Full Stack web uygulaması: 8D Problem Çözme Metodolojisinin dijitalleştirilmesi (D1-D2 ve D4-D5 aşamaları)
 
 ## Teknolojiler
